@@ -1,7 +1,8 @@
-from numpy import cov, mean, array, dot, vectorize, arctan2, vstack, sqrt, pi, sin, newaxis, cos
+from numpy import (cov, mean, array, dot, vectorize, arctan2,
+                   vstack, sqrt, pi, sin, newaxis, cos, concatenate)
 from numpy.linalg import eigh, norm
 import warnings
-from scipy.optimize import minimize_scalar
+from scipy.optimize import minimize_scalar, minimize
 
 T = 2 * pi / 3
 
@@ -56,8 +57,9 @@ def unidiff(x, y):
     return min(p, q)
 
 
-def corner(pts):
-    cen = mean(pts, axis=1)
+def corner(pts, cen=None):
+    if cen is None:
+        cen = mean(pts, axis=1)
     dx, dy = pts - cen[:, newaxis]
     rho = sqrt(dx**2 + dy**2)
     theta = arctan2(dy, dx) % T
@@ -74,7 +76,7 @@ def corner(pts):
     return array([r, angle])
 
 
-def position(pts):
+def position_deprecated(pts):
     fit_res = cov_linearfit(pts)
     # Direction of connecting line
     cen, val, direct = fit_res
@@ -84,6 +86,38 @@ def position(pts):
     pos, neg = split(pts, fit_res)
     v1, v2 = corner(pos), corner(neg)
     return theta, d, v1[1], v2[1]
+
+
+def position(pts):
+    pos, neg = split(pts)
+    x1 = optimize_fit(pos)
+    x2 = optimize_fit(neg)
+    return x1, x2
+
+
+def x0(pts):
+    cen = mean(pts, axis=1)
+    cor = corner(pts, cen)
+    return concatenate((cen, cor))
+
+
+def distance(pts, x):
+    cen = x[:2]
+    rho, theta = x[2:]
+    rho /= 2
+    dis = pts - cen[:, newaxis]
+    r = norm(dis, axis=0)
+    phi = (arctan2(dis[1], dis[0]) - theta) % T
+    return norm(r * cos(phi - T / 2) - rho)
+
+
+def optimize_fit(pts):
+    res = minimize(
+        lambda x: distance(pts, x),
+        x0(pts),
+        method='BFGS',
+    )
+    return res.x
 
 
 if __name__ == '__main__':

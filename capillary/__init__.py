@@ -1,1 +1,1 @@
-__all__ = ['fitting', 'edge']
+__all__ = ['fitting', 'edge', 'display']

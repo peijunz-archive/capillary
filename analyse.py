@@ -2,7 +2,7 @@ from capillary import edge, fitting, display
 import matplotlib.pyplot as plt
 for i in range(73):
     plt.clf()
-    print('Processing frame %d'%i)
+    print('Processing frame %d'%(i+1))
     pts=edge.get(i+1)
     display.show_frame(pts)
     #grid();

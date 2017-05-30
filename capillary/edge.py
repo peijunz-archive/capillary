@@ -17,7 +17,7 @@ def pts(im):
     return np.array(np.nonzero(im))
 
 
-def image_reader(fmt="images/output_%04d.jpg"):
+def image_reader(fmt="images/output_%04d.png"):
     return lambda s: io.imread(fmt % s, as_grey=True)
 
 

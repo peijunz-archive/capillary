@@ -7,31 +7,32 @@ def show_pts(pts):
     plt.plot(pts[0], pts[1], 'o', markersize=1)
 
 
-def show_displace(pts):
+def show_axis(pts):
     res = cov_linearfit(pts)
     xc, yc = displacement(pts, res)
-    plt.plot(xc, yc, 'r-')
+    plt.plot(xc, yc, '--')
 
 
-def show_split(pos, neg=None):
+def show_split(pos, neg=None):  # BUG
     if neg is None:
-        pos, neg = split(pts)
+        pos, neg = split(pos)
     plt.plot(pos[0], pos[1], 'o', markersize=1)
     plt.plot(neg[0], neg[1], 'o', markersize=1)
 
 
-def show_hull(pts):
-    xc, yc = mean(pts, axis=1)
-    r, theta = corner(pts)
+def show_hull(x, scale=1):
+    xc, yc, r, theta = x
     t = arange(4) * T + theta
-    r *= 1.4
+    r *= scale
     xl, yl = xc + r * cos(t), yc + r * sin(t)
     plt.plot(xl, yl)
 
 
-def show_frame(pts):
+def show_frame(pts, scale=1):
+    # show_axis(pts)
     pos, neg = split(pts)
-    show_hull(pos)
-    show_hull(neg)
+    x1, x2 = optimize_fit(pos), optimize_fit(neg)
+    show_hull(x1, scale)
+    show_hull(x2, scale)
     show_split(pos, neg)
-    show_displace(pts)
+    plt.plot([x1[0], x2[0]], [x1[1], x2[1]], 'o-')
