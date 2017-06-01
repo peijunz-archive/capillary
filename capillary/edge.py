@@ -14,18 +14,20 @@ def find(im, weight=0.05, sigma=1.5):
 
 
 def pts(im):
+    '''Extract coordinates of edges'''
     return np.array(np.nonzero(im))
 
 
-def image_reader(fmt="/home/zpj/code/capillary/images/output_%04d.png"):
+def image_reader(fmt):
     return lambda s: io.imread(fmt % s, as_grey=True)
 
 
-def get(n):
-    R = image_reader()
-    return pts(find(R(n)))
+R = image_reader("/home/zpj/code/capillary/images/output_%04d.png")
+
+
+def get(n, reader=R):
+    return pts(find(reader(n)))
 
 
 if __name__ == "__main__":
-    R = image_reader()
     print(R(1))
