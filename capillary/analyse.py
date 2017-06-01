@@ -1,7 +1,7 @@
 from numpy import cumsum, empty, save, arctan2, load, pi, empty_like, diff
 from numpy.linalg import norm
 import matplotlib.pyplot as plt
-from . import *
+from . import edge, fitting
 
 
 def connectify(l, period):
