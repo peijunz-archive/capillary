@@ -108,7 +108,7 @@ def distance(pts, x):
     dis = pts - cen[:, newaxis]
     r = norm(dis, axis=0)
     phi = (arctan2(dis[1], dis[0]) - theta) % T
-    return norm(r * cos(phi - T / 2) - rho)
+    return norm(r * (r * cos(phi - T / 2) - rho))
 
 
 def optimize_fit(pts):
