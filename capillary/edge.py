@@ -3,14 +3,28 @@ from skimage.feature import canny
 from skimage import io
 import numpy as np
 
+edge_para = [
+    [0.05, 1.5],
+    [0.08, 1.],
+    [0.08, 1.1],
+    [0.15, 1.5],
+    [0.13, 1.1],
+    [0.1, 1.2],
+    [0.15, 1.1],
+    [0.13, 1.5]
+]
+
 
 def find(im, weight=0.05, sigma=1.5):
     '''Donoise first, and then use canny filter to find edge
     weight  used for denoise_tv_chambolle
     sigma   used for edge
     '''
-    im2 = denoise_tv_chambolle(im, weight=0.05, multichannel=True)
-    return canny(im2, sigma=1.5)
+    if weight:
+        im = denoise_tv_chambolle(im, weight=weight, multichannel=True)
+    if sigma:
+        im = canny(im, sigma=sigma)
+    return im
 
 
 def pts(im):
@@ -18,16 +32,22 @@ def pts(im):
     return np.array(np.nonzero(im))
 
 
-def image_reader(fmt):
-    return lambda s: io.imread(fmt % s, as_grey=True)
+img_path = "/home/zpj/code/capillary/images/%d/"
+img_name = "output_%04d.png"
 
 
-R = image_reader("/home/zpj/code/capillary/images/output_%04d.png")
+def image_reader(path, name):
+    return lambda s: io.imread(path + name % s, as_grey=True)
 
 
-def get(n, reader=R):
-    return pts(find(reader(n)))
+R = [image_reader(img_path % i, img_name) for i in range(8)]
 
+
+def pts_getter(n):
+    return lambda x: pts(find(R[n](x), *edge_para[n]))
+
+
+G = [pts_getter(i) for i in range(8)]
 
 if __name__ == "__main__":
     print(R(1))
