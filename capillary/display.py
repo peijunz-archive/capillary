@@ -30,8 +30,10 @@ def show_hull(x, scale=1):
 
 def show_frame(pts, scale=1):
     # show_axis(pts)
-    pos, neg = split(pts)
-    x1, x2 = optimize_fit(pos), optimize_fit(neg)
+    x1, x2, pos, neg = double_fit(pts)
+    #print(pos, neg)
+    #= split(pts)
+    #x1, x2 = optimize_fit(pos), optimize_fit(neg)
     show_hull(x1, scale)
     show_hull(x2, scale)
     show_split(pos, neg)

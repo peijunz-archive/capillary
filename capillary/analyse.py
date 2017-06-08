@@ -1,7 +1,7 @@
 from numpy import cumsum, empty, save, arctan2, load, pi, empty_like, diff
 from numpy.linalg import norm
 import matplotlib.pyplot as plt
-from . import edge, fitting
+from . import edge, fitting, display
 
 
 def connectify(l, period):
@@ -24,9 +24,9 @@ def rawres(pts_getter, frame_list):
         Res = empty([len(frame_list), 2, 4])
         for i, frame in enumerate(frame_list):
             pts = pts_getter(frame)
-            pos, neg = fitting.split(pts)
-            Res[i, 0] = fitting.optimize_fit(pos)
-            Res[i, 1] = fitting.optimize_fit(neg)
+            p, n = fitting.double_fit(pts)
+            Res[i, 0] = p
+            Res[i, 1] = n
         save(cachefile, Res)
     return Res
 
@@ -46,20 +46,28 @@ def analyse(pts_getter, frame_list):
     return analyse_raw(rawres(pts_getter, frame_list))
 
 
-def process_svg():
-    for i in range(73):
-        plt.clf()
-        print('Processing frame %d' % (i + 1))
-        pts = edge.get(i + 1)
-        display.show_frame(pts)
-        # grid();
-        plt.axis('square')
-        plt.xlim(0, 284)
-        plt.ylim(0, 284)
-        plt.savefig('processed/output_%04d_processed.svg' % (i + 1),
-                    bbox_inches='tight',
-                    )
+def process_svg(i):
+    plt.clf()
+    print('Processing frame %d' % (i + 1))
+    pts = edge.G[0](i + 1)
+    display.show_frame(pts)
+    # grid();
+    plt.axis('square')
+    #plt.xlim(0, 284)
+    #plt.ylim(0, 284)
+    plt.savefig('processed/output_%04d_processed.svg' % (i + 1),
+                bbox_inches='tight',
+                )
+
+
+def process_raw(i):
+    pts = edge.G[0](i + 1)
+    print(fitting.double_fit(pts))
 
 
 if __name__ == "__main__":
-    process_svg()
+    from multiprocessing import Pool
+    p=Pool()
+    p.map(process_raw, range(73))
+    p.close()
+    p.join()
