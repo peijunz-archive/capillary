@@ -16,8 +16,8 @@ def show_axis(pts):
 def show_split(pos, neg=None):  # BUG
     if neg is None:
         pos, neg = split(pos)
-    plt.plot(pos[0], pos[1], 'o', markersize=1)
-    plt.plot(neg[0], neg[1], 'o', markersize=1)
+    plt.plot(pos[0], pos[1], 'o', markersize=2, alpha = 0.5)
+    plt.plot(neg[0], neg[1], 'o', markersize=2, alpha = 0.5)
 
 
 def show_hull(x, scale=1):
@@ -28,9 +28,9 @@ def show_hull(x, scale=1):
     plt.plot(xl, yl)
 
 
-def show_frame(pts, scale=1):
+def show_frame(pts, scale=1, iterate = 0):
     # show_axis(pts)
-    x1, x2, pos, neg = double_fit(pts)
+    x1, x2, pos, neg = double_fit(pts, iterate)
     #print(pos, neg)
     #= split(pts)
     #x1, x2 = optimize_fit(pos), optimize_fit(neg)

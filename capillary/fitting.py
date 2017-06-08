@@ -43,7 +43,7 @@ def split(pts, fit_res = None, silent = False):
     close = val[1] < 9 * val[0]
     if not silent:
         if close:
-            warnings.warn(warnings.warn("Particles are too close, separation may fail!"))
+            warnings.warn("Particles are too close, separation may fail!")
         return pos, neg
     else:
         return pos, neg, close
@@ -140,17 +140,14 @@ def optimize_fit(vpts, estimate=None):
     return res.x
 
 
-def double_fit(pts):
+def double_fit(pts, iterate = 3):
     pos, neg, close = split(pts, silent=True)
     p, n = optimize_fit(pos), optimize_fit(neg)
     #return p, n, pos, neg
-    if close:
-        pos, neg = resplit(pts, p, n)
-        p, n = optimize_fit(pos, p), optimize_fit(neg, n)
-        pos, neg = resplit(pts, p, n)
-        p, n = optimize_fit(pos, p), optimize_fit(neg, n)
-        pos, neg = resplit(pts, p, n)
-        p, n = optimize_fit(pos, p), optimize_fit(neg, n)
+    if close and iterate:
+        for i in range(iterate):
+            pos, neg = resplit(pts, p, n)
+            p, n = optimize_fit(pos, p), optimize_fit(neg, n)
     return p, n, pos, neg
 
 
