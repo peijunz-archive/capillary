@@ -2,6 +2,7 @@ from numpy import cumsum, empty, save, arctan2, load, pi, empty_like, diff
 from numpy.linalg import norm
 import matplotlib.pyplot as plt
 from . import edge, fitting, display
+from datetime import datetime
 
 
 def connectify(l, period):
@@ -14,36 +15,48 @@ def connectify(l, period):
     return cumsum(delta)
 
 
-def rawres(pts_getter, frame_list):
+def action(video, frame_list, cachefile=None):
+    Res = empty([len(frame_list), 2, 5])
+    for i, frame in enumerate(frame_list):
+        p, n, _, _, fp, fn = fitting.adaptive_fit(video, frame)
+        print(i, p, n)
+        Res[i, 0, :4] = p
+        Res[i, 0, 4] = fp
+        Res[i, 1, :4] = n
+        Res[i, 1, 4] = fn
+    if cachefile is None:
+        cachefile = str(datetime.now()) + '.npy'
+    save(cachefile, Res)
+    return Res
+
+
+def rawres(video, frame_list, flush, cachefile):
     '''Get raw result of both particles from frames'''
-    cachefile = 'measured_result.npy'
-    try:
-        # Load cached result
-        Res = load(cachefile)
-    except FileNotFoundError:
-        Res = empty([len(frame_list), 2, 4])
-        for i, frame in enumerate(frame_list):
-            pts = pts_getter(frame)
-            p, n = fitting.double_fit(pts)
-            Res[i, 0] = p
-            Res[i, 1] = n
-        save(cachefile, Res)
+    if flush:
+        Res = action(video, frame_list, cachefile)
+    else:
+        try:
+            Res = load(cachefile)
+        except FileNotFoundError:
+            Res = action(video, frame_list, cachefile)
     return Res
 
 
 def analyse_raw(raw):
     '''Analyse raw result and get (rho, theta) for displacement and
     orientation of each one'''
-    cen = raw[:, 0, :2] - raw[:, 1, :2]
+    cen = raw[:, 1, :2] - raw[:, 0, :2]
     rho = norm(cen, axis=1)
     theta = connectify(arctan2(cen[:, 1], cen[:, 0]), 2 * pi)
     t1 = connectify(raw[:, 0, 3], 2 * pi / 3)
     t2 = connectify(raw[:, 1, 3], 2 * pi / 3)
-    return rho, theta, t1, t2
+    fp = raw[:, 0, -1]
+    fn = raw[:, 1, -1]
+    return rho, theta, t1, t2, fp, fn
 
 
-def analyse(pts_getter, frame_list):
-    return analyse_raw(rawres(pts_getter, frame_list))
+def analyse(video, frame_list, flush=False, cachefile='measured_res.npy'):
+    return analyse_raw(rawres(video, frame_list, flush, cachefile))
 
 
 def process_svg(i):
@@ -66,8 +79,11 @@ def process_raw(i):
 
 
 if __name__ == "__main__":
-    from multiprocessing import Pool
-    p=Pool()
-    p.map(process_raw, range(73))
-    p.close()
-    p.join()
+    for i in range(1, 8):
+        action(i, range(
+            1, edge.imgnum[i] + 1, edge.imgnum[i] // 200),   cachefile='data/%d.npy' % i)
+    #from multiprocessing import Pool
+    # p=Pool()
+    #p.map(process_raw, range(73))
+    # p.close()
+    # p.join()
