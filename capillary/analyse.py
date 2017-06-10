@@ -16,30 +16,30 @@ def connectify(l, period):
 
 
 def action(video, frame_list, cachefile=None):
-    Res = empty([len(frame_list), 2, 5])
+    res = empty([len(frame_list), 2, 5])
     for i, frame in enumerate(frame_list):
         p, n, _, _, fp, fn = fitting.adaptive_fit(video, frame)
         print(i, p, n)
-        Res[i, 0, :4] = p
-        Res[i, 0, 4] = fp
-        Res[i, 1, :4] = n
-        Res[i, 1, 4] = fn
+        res[i, 0, :4] = p
+        res[i, 0, 4] = fp
+        res[i, 1, :4] = n
+        res[i, 1, 4] = fn
     if cachefile is None:
         cachefile = str(datetime.now()) + '.npy'
-    save(cachefile, Res)
-    return Res
+    save(cachefile, res)
+    return res
 
 
 def rawres(video, frame_list, flush, cachefile):
     '''Get raw result of both particles from frames'''
     if flush:
-        Res = action(video, frame_list, cachefile)
+        res = action(video, frame_list, cachefile)
     else:
         try:
-            Res = load(cachefile)
+            res = load(cachefile)
         except FileNotFoundError:
-            Res = action(video, frame_list, cachefile)
-    return Res
+            res = action(video, frame_list, cachefile)
+    return res
 
 
 def analyse_raw(raw):
@@ -65,7 +65,7 @@ def process_raw(i):
 
 
 def analyse_video(i):
-    action(i, range(1, edge.img_num[i] + 1), cachefile='data/%d.npy' % i)
+    action(i, range(1, edge.img_num[i] + 1), cachefile='data/{}.npy'.format(i))
 
 
 if __name__ == "__main__":

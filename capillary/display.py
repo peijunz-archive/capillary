@@ -1,7 +1,7 @@
-from numpy import arange
+from numpy import sin, cos, arange
 import matplotlib.pyplot as plt
-from .fitting import *
-from .edge import *
+from . import fitting, edge
+from .fitting import T, adaptive_fit, double_fit
 
 
 def show_pts(pts):
@@ -43,14 +43,14 @@ def show_frame(pts, scale=1, iterate=0):
 
 def process_svg(i):
     plt.clf()
-    print('Processing frame %d' % (i + 1))
+    print('Processing frame {}'.format(i + 1))
     pts = edge.G[0](i + 1)
     display.show_frame(pts)
     # grid();
     plt.axis('square')
     #plt.xlim(0, 284)
     #plt.ylim(0, 284)
-    plt.savefig('processed/output_%04d_processed.svg' % (i + 1),
+    plt.savefig('processed/output_{:04}_processed.svg'.format(i + 1),
                 bbox_inches='tight',
                 )
 
@@ -64,11 +64,11 @@ def visualize_svg(v, frames):
         show_split(pos, neg)
         plt.plot([x1[0], x2[0]], [x1[1], x2[1]], 'o-')
         plt.axis('equal')
-        print('Processing video %d frame %d' % (v, frame))
-        plt.savefig('SVG/%d/output_%04d_processed.svg' % (v, frame),
+        print('Processing video {} frame {}'.format(v, frame))
+        plt.savefig('SVG/{}/output_{:04}_processed.svg'.format(v, frame),
                     bbox_inches='tight',
                     )
 
 
 if __name__ == "__main__":
-    visualize_svg(7, range(200, img_num[7] + 1, 20))
+    visualize_svg(7, range(200, edge.img_num[7] + 1, 20))

@@ -50,15 +50,15 @@ def pts(im):
     return np.array(np.nonzero(im))
 
 
-img_path = "/home/zpj/code/capillary/images/%d/"
-img_name = "output_%04d.png"
+img_path = "/home/zpj/code/capillary/images/{}/"
+img_name = "output_{:04}.png"
 
 
 def image_reader(path, name):
-    return lambda s: io.imread(path + name % s, as_grey=True)
+    return lambda s: io.imread(path + name.format(s), as_grey=True)
 
 
-R = [image_reader(img_path % i, img_name) for i in range(8)]
+R = [image_reader(img_path.format(i), img_name) for i in range(8)]
 
 
 def pts_getter(n):
