@@ -1,6 +1,7 @@
 from numpy import arange
 import matplotlib.pyplot as plt
 from .fitting import *
+from .edge import *
 
 
 def show_pts(pts):
@@ -9,7 +10,7 @@ def show_pts(pts):
 
 def show_axis(pts):
     res = cov_linearfit(pts)
-    xc, yc = axisdisp(pts, res)
+    xc, yc = axis_displace(pts, res)
     plt.plot(xc, yc, '--')
 
 
@@ -38,3 +39,36 @@ def show_frame(pts, scale=1, iterate=0):
     show_hull(x2, scale)
     show_split(pos, neg)
     plt.plot([x1[0], x2[0]], [x1[1], x2[1]], 'o-')
+
+
+def process_svg(i):
+    plt.clf()
+    print('Processing frame %d' % (i + 1))
+    pts = edge.G[0](i + 1)
+    display.show_frame(pts)
+    # grid();
+    plt.axis('square')
+    #plt.xlim(0, 284)
+    #plt.ylim(0, 284)
+    plt.savefig('processed/output_%04d_processed.svg' % (i + 1),
+                bbox_inches='tight',
+                )
+
+
+def visualize_svg(v, frames):
+    for i, frame in enumerate(frames):
+        plt.clf()
+        x1, x2, pos, neg, fp, fn = adaptive_fit(v, frame, lv=5)
+        show_hull(x1, 1)
+        show_hull(x2, 1)
+        show_split(pos, neg)
+        plt.plot([x1[0], x2[0]], [x1[1], x2[1]], 'o-')
+        plt.axis('equal')
+        print('Processing video %d frame %d' % (v, frame))
+        plt.savefig('SVG/%d/output_%04d_processed.svg' % (v, frame),
+                    bbox_inches='tight',
+                    )
+
+
+if __name__ == "__main__":
+    visualize_svg(7, range(200, img_num[7] + 1, 20))

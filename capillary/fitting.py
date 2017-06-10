@@ -21,7 +21,7 @@ def cov_linearfit(pts, ly=None):
     return cen, val, vec[1]
 
 
-def axisdisp(pts, fit_res=None):
+def axis_displace(pts, fit_res=None):
     if not fit_res:
         fit_res = cov_linearfit(pts)
     cen, val, direct = fit_res
@@ -158,7 +158,7 @@ def double_fit(pts, iterate=3):
     return p, n, pos, neg, fp, fn
 
 
-def adaptive_fit(video, num, iterate=3):
+def adaptive_fit(video, num, iterate=3, lv=6):
     '''Adaptive fit frame of a video by changing:
     + Noise and Edge Filter
     + Resplit for close case
@@ -169,21 +169,22 @@ def adaptive_fit(video, num, iterate=3):
     bestres = None
     pts_getter = G[video]
     mp, mn = width[video]
-    while True:
+    while lv >= 0:
         pts = pts_getter(num, factor)
         try:
             p, n, pos, neg, fp, fn = double_fit(pts)
         except IndexError:
-            warnings.warn("Disturbing edge, with badness {}".format(badness))
+            warnings.warn(
+                "Disturbing edge, with badness {} and factor {}".format(
+                    badness, factor))
             return bestres
-        if fp * fn < badness:
-            badness = fp * fn
+        if max(fp, fn) < badness:
+            badness = max(fp, fn)
             bestres = (p, n, pos, neg, fp, fn)
-        if fp < mp and fn < mn or factor > 1.5:
+        if fp < mp and fn < mn:
             break
         factor *= 1.1
-    if factor > 1.5:
-        warnings.warn("Disturbing edge")
+        lv -= 1
     print(bestres[-2:])
     return bestres
 

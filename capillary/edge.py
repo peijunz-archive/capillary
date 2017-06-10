@@ -1,47 +1,48 @@
+# Infrastructure for video analysis
+# Edge Detection and magical parameters
+
 from skimage.restoration import denoise_tv_chambolle
 from skimage.feature import canny
 from skimage import io
 import numpy as np
 
-edgefilt = np.array([
+edge_filt = np.array([
     [0.05, 1.5],
     [0.08, 1.0],
-    [0.09, 1.1],
-    [0.15, 1.5],
-    [0.13, 1.1],
+    [0.06, 1.0],
+    [0.1, 1],
+    [0.1, 1.1],
     [0.1, 1.2],
-    [0.15, 1.1],
-    [0.13, 1.5]
+    [0.1, 1],
+    [0.3, 0.3]
 ])
 
 
 width = np.array([
-    [2.7215898398,  2.68920027364],
-    [1.74625446383, 1.74625446383],  # 1.65414973627],
-    [2.10674968481, 2.0274694363],
-    [2.01655262385, 2.05488268876],
-    [2.06784274947, 2.09093288310],
-    [2.03225926546, 1.99784354101],
-    [3.22829341331, 2.75795405483],
-    [3.33940193435, 2.84097452172]
+    [2.67648717,  2.60988034],
+    [2.1,  2.1],
+    [2.2,  2.2],
+    [2.2,  2.2],
+    [2.2,  2.2],
+    [2.2,  2.2],
+    [3.14315619,  2.68117912],
+    [3.14290475,  2.60330584]
 ])
 
-
-def upper(a):
-    return np.mean(a) + 2.5 * np.std(a)
+lv = np.array([0, 3, 5, 5, 0, 0, ])
 
 
-def loadwidth():
+def load_width():
     w = np.empty([8, 2], dtype=float)
     for i in range(8):
         raw = np.load('data/%d.npy' % i)
         fp = raw[:, 0, -1]
         fn = raw[:, 1, -1]
-        w[i] = upper(fp), upper(fn)
-    print(repr(w))
+        w[i] = np.percentile(fp, 95), np.percentile(fn, 95)
+    return w
 
 
-imgnum = np.array([73, 2956, 1196, 1135, 798, 485, 1463, 1242])
+img_num = np.array([73, 2956, 1196, 1135, 798, 485, 1463, 1242])
 
 
 def find(im, weight=0.05, sigma=1.5):
@@ -74,11 +75,11 @@ R = [image_reader(img_path % i, img_name) for i in range(8)]
 
 def pts_getter(n):
     def f(x, k=1):
-        return pts(find(R[n](x), *(k * edgefilt[n])))
+        return pts(find(R[n](x), *(k * edge_filt[n])))
     return f
 
 
 G = [pts_getter(i) for i in range(8)]
 
 if __name__ == "__main__":
-    loadwidth()
+    print(load_width())

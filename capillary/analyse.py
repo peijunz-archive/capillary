@@ -1,7 +1,7 @@
 from numpy import cumsum, empty, save, arctan2, load, pi, empty_like, diff
 from numpy.linalg import norm
 import matplotlib.pyplot as plt
-from . import edge, fitting, display
+from . import edge, fitting
 from datetime import datetime
 
 
@@ -55,22 +55,8 @@ def analyse_raw(raw):
     return rho, theta, t1, t2, fp, fn
 
 
-def analyse(video, frame_list, flush=False, cachefile='measured_res.npy'):
+def analyse_frames(video, frame_list, flush=False, cachefile='measured_res.npy'):
     return analyse_raw(rawres(video, frame_list, flush, cachefile))
-
-
-def process_svg(i):
-    plt.clf()
-    print('Processing frame %d' % (i + 1))
-    pts = edge.G[0](i + 1)
-    display.show_frame(pts)
-    # grid();
-    plt.axis('square')
-    #plt.xlim(0, 284)
-    #plt.ylim(0, 284)
-    plt.savefig('processed/output_%04d_processed.svg' % (i + 1),
-                bbox_inches='tight',
-                )
 
 
 def process_raw(i):
@@ -78,12 +64,13 @@ def process_raw(i):
     print(fitting.double_fit(pts))
 
 
+def analyse_video(i):
+    action(i, range(1, edge.img_num[i] + 1), cachefile='data/%d.npy' % i)
+
+
 if __name__ == "__main__":
-    for i in range(1, 8):
-        action(i, range(
-            1, edge.imgnum[i] + 1, edge.imgnum[i] // 200),   cachefile='data/%d.npy' % i)
-    #from multiprocessing import Pool
-    # p=Pool()
-    #p.map(process_raw, range(73))
-    # p.close()
-    # p.join()
+    from multiprocessing import Pool
+    p = Pool()
+    p.map(analyse_video, range(5, 6))
+    p.close()
+    p.join()
