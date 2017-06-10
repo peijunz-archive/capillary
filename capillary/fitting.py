@@ -22,6 +22,7 @@ def cov_linearfit(pts, ly=None):
 
 
 def axis_displace(pts, fit_res=None):
+    '''Displacement of major axis'''
     if not fit_res:
         fit_res = cov_linearfit(pts)
     cen, val, direct = fit_res
@@ -108,6 +109,7 @@ def ds(i, p, n):
 
 
 def resplit(pts, p, n):
+    '''Split points based on current fitting triangles'''
     vpts = pts.transpose()
     pos = array([i for i in vpts if ds(i, p, n) < 1]).transpose()
     neg = array([i for i in vpts if ds(i, p, n) > -1]).transpose()

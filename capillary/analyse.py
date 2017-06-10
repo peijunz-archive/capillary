@@ -16,6 +16,7 @@ def connectify(l, period):
 
 
 def action(video, frame_list, cachefile=None):
+    '''Analyse frames of a video and save it into cache'''
     res = empty([len(frame_list), 2, 5])
     for i, frame in enumerate(frame_list):
         p, n, _, _, fp, fn = fitting.adaptive_fit(video, frame)

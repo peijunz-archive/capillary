@@ -22,6 +22,7 @@ def show_split(pos, neg=None):  # BUG
 
 
 def show_hull(x, scale=1):
+    '''Show fitting triangles'''
     xc, yc, r, theta = x
     t = arange(4) * T + theta
     r *= scale
@@ -30,6 +31,7 @@ def show_hull(x, scale=1):
 
 
 def show_frame(pts, scale=1, iterate=0):
+    '''Show the split of points and hulls for a frame'''
     # show_axis(pts)
     x1, x2, pos, neg, fp, fn = double_fit(pts, iterate)
     #print(pos, neg)
@@ -39,20 +41,6 @@ def show_frame(pts, scale=1, iterate=0):
     show_hull(x2, scale)
     show_split(pos, neg)
     plt.plot([x1[0], x2[0]], [x1[1], x2[1]], 'o-')
-
-
-def process_svg(i):
-    plt.clf()
-    print('Processing frame {}'.format(i + 1))
-    pts = edge.G[0](i + 1)
-    display.show_frame(pts)
-    # grid();
-    plt.axis('square')
-    #plt.xlim(0, 284)
-    #plt.ylim(0, 284)
-    plt.savefig('processed/output_{:04}_processed.svg'.format(i + 1),
-                bbox_inches='tight',
-                )
 
 
 def visualize_svg(v, frames):
