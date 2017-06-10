@@ -29,18 +29,6 @@ width = np.array([
     [3.14290475,  2.60330584]
 ])
 
-lv = np.array([0, 3, 5, 5, 0, 0, ])
-
-
-def load_width():
-    w = np.empty([8, 2], dtype=float)
-    for i in range(8):
-        raw = np.load('data/%d.npy' % i)
-        fp = raw[:, 0, -1]
-        fn = raw[:, 1, -1]
-        w[i] = np.percentile(fp, 95), np.percentile(fn, 95)
-    return w
-
 
 img_num = np.array([73, 2956, 1196, 1135, 798, 485, 1463, 1242])
 
@@ -80,6 +68,3 @@ def pts_getter(n):
 
 
 G = [pts_getter(i) for i in range(8)]
-
-if __name__ == "__main__":
-    print(load_width())
