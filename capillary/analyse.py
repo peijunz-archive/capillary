@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 def connectify(l, period):
-    '''Minmize the distance between near angles
+    '''Minimize the distance between near angles
     with the degree of freedom of periodicity 
     '''
     delta = empty_like(l)
@@ -65,8 +65,8 @@ def process_raw(i):
     print(fitting.double_fit(pts))
 
 
-def analyse_video(i):
-    action(i, range(1, edge.img_num[i] + 1), cachefile='data/{}.npy'.format(i))
+def analyse_video(v):
+    action(v, range(1, edge.img_num[v] + 1), cachefile='data/{}.npy'.format(v))
 
 
 if __name__ == "__main__":

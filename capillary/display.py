@@ -2,6 +2,8 @@ from numpy import sin, cos, arange
 import matplotlib.pyplot as plt
 from . import fitting, edge
 from .fitting import T, adaptive_fit, double_fit
+from multiprocessing import Pool
+from functools import partial
 
 
 def show_pts(pts):
@@ -30,33 +32,37 @@ def show_hull(x, scale=1):
     plt.plot(xl, yl)
 
 
-def show_frame(pts, scale=1, iterate=0):
+def show_frame(v, frame, save=True):
     '''Show the split of points and hulls for a frame'''
-    # show_axis(pts)
-    x1, x2, pos, neg, fp, fn = double_fit(pts, iterate)
-    #print(pos, neg)
-    #= split(pts)
-    #x1, x2 = optimize_fit(pos), optimize_fit(neg)
-    show_hull(x1, scale)
-    show_hull(x2, scale)
+    plt.clf()
+    x1, x2, pos, neg, fp, fn = adaptive_fit(v, frame)
+    show_hull(x1, 1)
+    show_hull(x2, 1)
     show_split(pos, neg)
     plt.plot([x1[0], x2[0]], [x1[1], x2[1]], 'o-')
-
-
-def visualize_svg(v, frames):
-    for i, frame in enumerate(frames):
-        plt.clf()
-        x1, x2, pos, neg, fp, fn = adaptive_fit(v, frame, lv=5)
-        show_hull(x1, 1)
-        show_hull(x2, 1)
-        show_split(pos, neg)
-        plt.plot([x1[0], x2[0]], [x1[1], x2[1]], 'o-')
-        plt.axis('equal')
-        print('Processing video {} frame {}'.format(v, frame))
+    plt.axis('equal')
+    if save:
+        print('Processing video {} frame {}:'.format(v, frame))
         plt.savefig('SVG/{}/output_{:04}_processed.svg'.format(v, frame),
                     bbox_inches='tight',
                     )
 
 
+def visualize_frames(v, frames, multi=True):
+    if multi:
+        p = Pool()
+        func = partial(show_frame, v)
+        p.map(func, frames)
+        p.close()
+        p.join()
+    else:
+        for frame in frames:
+            singles_frame(frame)
+
+
+def visualize_video(v, start=1, step=1):
+    visualize_frames(v, range(start, edge.img_num[v] + 1, step))
+
+
 if __name__ == "__main__":
-    visualize_svg(7, range(200, edge.img_num[7] + 1, 20))
+    visualize_video(1, start=1900)
