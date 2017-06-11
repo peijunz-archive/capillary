@@ -45,11 +45,6 @@ def split(pts, fit_res=None):
 
 
 @vectorize
-def normalize_angle(t):
-    return t % T
-
-
-@vectorize
 def unidiff(x, y):
     p = (x - y) % T
     q = (y - x) % T
@@ -187,7 +182,7 @@ def adaptive_fit(video, num, iterate=3, lv=6):
             break
         factor *= 1.1
         lv -= 1
-    print(bestres[-2:])
+    # print(bestres[0])
     return bestres
 
 

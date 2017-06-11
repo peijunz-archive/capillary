@@ -65,4 +65,5 @@ def visualize_video(v, start=1, step=1):
 
 
 if __name__ == "__main__":
-    visualize_video(1, start=1900)
+    visualize_frames(6, range(1440, 1464))
+    # visualize_video(3)
