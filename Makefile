@@ -36,3 +36,10 @@ processed.tgz:
 	tar -czf processed.tar.gz processed/*
 processed.zip:
 	zip processed.zip processed/*
+frames.zip:
+	for i in {1..7} ; do \
+	cpdf -merge -idir pdf/$$i -o pdf/video_$$i.pdf ; \
+	done
+	zip frames.zip pdf/*.pdf
+figures.pdf:
+	cpdf -merge -idir figures/ -o figures.pdf ; \

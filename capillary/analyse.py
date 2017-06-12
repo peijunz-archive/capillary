@@ -13,8 +13,8 @@ def absmin(t, T):
     return (t + T / 2) % T - T / 2
 
 
-def regularize(l, period, k=10):
-    std = mean(l[-6:])
+def regularize(l, period, k=12):
+    std = mean(l[-k:])
     n = (absmin(std, period) - std) / period
     return l + n * period
 
@@ -122,8 +122,8 @@ def analyse_raw(n):
     df = pd.DataFrame(data, columns=data.keys())
     df.index = frames.astype(int)
     df.index.name = 'Frame'
-    df = df[df['err1'] < 2 * edge.width[n][0]]
-    df = df[df['err2'] < 2 * edge.width[n][1]]
+    df = df[df['err1'] < 1.5*edge.width[n][0]]
+    df = df[df['err2'] < 1.5*edge.width[n][1]]
     return df
 
 

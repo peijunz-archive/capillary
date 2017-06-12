@@ -32,7 +32,7 @@ def show_hull(x, scale=1):
     plt.plot(xl, yl)
 
 
-def show_frame(v, frame, save=True):
+def show_frame(v, frame, save=True, fmt='pdf'):
     '''Show the split of points and hulls for a frame'''
     plt.clf()
     x1, x2, pos, neg, fp, fn = adaptive_fit(v, frame)
@@ -41,9 +41,10 @@ def show_frame(v, frame, save=True):
     show_split(pos, neg)
     plt.plot([x1[0], x2[0]], [x1[1], x2[1]], 'o-')
     plt.axis('equal')
+    plt.title('Video {}, Frame {}'.format(v, frame))
     if save:
-        print('Processing video {} frame {}:'.format(v, frame))
-        plt.savefig('SVG/{}/output_{:04}_processed.svg'.format(v, frame),
+        print('Processing video {} frame {}...'.format(v, frame))
+        plt.savefig('{0}/{1}/output_{2:04}_processed.{0}'.format(fmt, v, frame),
                     bbox_inches='tight',
                     )
 
@@ -59,11 +60,14 @@ def visualize_frames(v, frames, multi=True):
         for frame in frames:
             singles_frame(frame)
 
+from itertools import chain
 
-def visualize_video(v, start=1, step=1):
-    visualize_frames(v, range(start, edge.img_num[v] + 1, step))
+def visualize_video(v, start=1, step=5):
+    l1=range(start, edge.touch[v]-step, step)
+    l2=range(edge.touch[v]-step, edge.img_num[v]+1)
+    visualize_frames(v, chain(l1, l2))
 
 
 if __name__ == "__main__":
-    visualize_frames(6, range(1440, 1464))
-    # visualize_video(3)
+    #visualize_frames(6, range(1440, 1464, 20))
+    visualize_video(1, step=20)
